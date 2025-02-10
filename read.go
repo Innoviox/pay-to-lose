@@ -14,7 +14,7 @@ import (
 func read(fp string) {
 	f, err := os.Open(fp)
 	if err != nil {
-		log.Panic("failed to open demo file: ", err)
+		fmt.Printf("failed to open demo file: %s", err)
 	}
 	defer f.Close()
 
@@ -32,6 +32,6 @@ func read(fp string) {
 	// Parse to end
 	err = p.ParseToEnd()
 	if err != nil {
-		log.Panic("failed to parse demo: ", err)
+		fmt.Printf("failed to parse demo: %s", err)
 	}
 }

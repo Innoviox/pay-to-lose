@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type KnifeType int
 const (
 	KBayonet KnifeType = 500
@@ -67,6 +71,6 @@ func ToString(k KnifeType) string {
 	case KnifeKukri:
 		return "KnifeKukri"
 	default:
-		panic("invalid knife type")
+		return fmt.Sprintf("Unknown knife type: %d", k)
 	}
 }
