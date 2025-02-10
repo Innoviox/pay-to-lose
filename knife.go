@@ -30,6 +30,10 @@ const (
 	KnifeKukri KnifeType = 526
 )
 
+var AllKnifeTypes = [20]KnifeType{
+	500, 503, 505, 506, 507, 508, 509, 512, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 525, 526,
+}
+
 func ToString(k KnifeType) string {
 	switch k {
 	case KBayonet:
@@ -78,6 +82,10 @@ func ToString(k KnifeType) string {
 }
 
 func GetKnife(p *common.Player) int {
+	if p == nil {
+		return 0
+	}
+
 	for _, weapon := range p.Weapons() {
 		if weapon.Type == common.EqKnife {
 			return GetKnifeType(weapon)

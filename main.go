@@ -3,24 +3,30 @@ package main
 import (
 	"os"
 	"strings"
-	// "fmt"
+	"fmt"
 	"github.com/schollz/progressbar/v3"
 )
 
 func main() {
-	d := NewData()
-
 	files, _ := os.ReadDir("demos")
 
 	bar := progressbar.Default(int64(len(files)))
+
+	c := make(chan *Data, len(files))
 	for _, f := range files {
 		// only read .dem files
 		if strings.HasSuffix(f.Name(), ".dem") {
-			d.Read("demos/" + f.Name())
+			go Read("demos/" + f.Name(), c)
 		}
-		bar.Add(1)
+	}
 
-		// fmt.Println(d.Deaths)
-		// fmt.Println(d.Owners)
+	ad := NewAggregatedData()
+	for d := range c {
+		ad.Add(d)
+		bar.Add(1)
+	}
+
+	for _, kt := range AllKnifeTypes {
+		fmt.Printf("%-20s | %-2d | %-2d \n", ToString(kt), ad.Owners[kt], ad.Deaths[kt])
 	}
 }
