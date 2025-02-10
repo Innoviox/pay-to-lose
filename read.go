@@ -69,19 +69,19 @@ func Read(fp string, c chan *Data) {
 	p.RegisterEventHandler(func(e events.Kill) {
 		var weapon = e.Victim.ActiveWeapon()
 		
-		var vfp = e.Victim.String() + fp
+		var vfp = e.Victim.String() + "@@@" + fp
 		if _, ok := d.Owners[vfp]; !ok {
 			var vkt = GetKnife(e.Victim)
 			if vkt != 0 {
-				d.Owners[e.Victim.String() + "@@@" + fp] = (KnifeType)(vkt)
+				d.Owners[vfp] = (KnifeType)(vkt)
 			}
 		}
 
-		var kfp = e.Killer.String() + fp
+		var kfp = e.Killer.String() + "@@@" + fp
 		if _, ok := d.Owners[kfp]; !ok {
 			var kkt = GetKnife(e.Killer)
 			if kkt != 0 {
-				d.Owners[e.Killer.String() + "@@@" + fp] = (KnifeType)(kkt)
+				d.Owners[kfp] = (KnifeType)(kkt)
 			}
 		}
 		

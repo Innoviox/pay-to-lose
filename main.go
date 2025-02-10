@@ -10,20 +10,31 @@ import (
 func main() {
 	files, _ := os.ReadDir("demos")
 
-	bar := progressbar.Default(int64(len(files)))
 
-	c := make(chan *Data, len(files))
+	// only read .dem files
+	var demFiles = make([]string, 0)
 	for _, f := range files {
-		// only read .dem files
 		if strings.HasSuffix(f.Name(), ".dem") {
-			go Read("demos/" + f.Name(), c)
+			demFiles = append(demFiles, f.Name())
 		}
 	}
 
+	c := make(chan *Data, len(demFiles))
+	for _, f := range demFiles {
+		go Read("demos/" + f, c)
+	}
+
+	bar := progressbar.Default(int64(len(demFiles)))
+
 	ad := NewAggregatedData()
+	i := 0
 	for d := range c {
+		i += 1
 		ad.Add(d)
 		bar.Add(1)
+		if i == len(demFiles) - 1 {
+			close(c)
+		}
 	}
 
 	for _, kt := range AllKnifeTypes {
