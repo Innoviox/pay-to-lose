@@ -2,7 +2,8 @@ package main
 
 import (
 	"os"
-	"fmt"
+	"strings"
+	// "fmt"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -13,10 +14,13 @@ func main() {
 
 	bar := progressbar.Default(int64(len(files)))
 	for _, f := range files {
-		d.Read("demos/" + f.Name())
+		// only read .dem files
+		if strings.HasSuffix(f.Name(), ".dem") {
+			d.Read("demos/" + f.Name())
+		}
 		bar.Add(1)
-	}
 
-	fmt.Println(d.GetDeaths())
-	fmt.Println(d.GetOwners())
+		// fmt.Println(d.Deaths)
+		// fmt.Println(d.Owners)
+	}
 }

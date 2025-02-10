@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+
+	common "github.com/markus-wa/demoinfocs-golang/v4/pkg/demoinfocs/common"
 )
 
 type KnifeType int
@@ -73,4 +75,23 @@ func ToString(k KnifeType) string {
 	default:
 		return fmt.Sprintf("Unknown knife type: %d", k)
 	}
+}
+
+func GetKnife(p *common.Player) int {
+	for _, weapon := range p.Weapons() {
+		if weapon.Type == common.EqKnife {
+			return GetKnifeType(weapon)
+		}
+	}
+	
+	return 0
+}
+
+func GetKnifeType(e *common.Equipment) int {
+	var knifeType = e.Entity.Property("m_iItemDefinitionIndex").Value().S2UInt64()
+	if knifeType < 500 || knifeType > 526 {
+		return 0
+	}
+
+	return (int)(knifeType)
 }
