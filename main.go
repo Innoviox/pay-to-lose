@@ -7,6 +7,7 @@ import (
 
 	dem "github.com/markus-wa/demoinfocs-golang/v4/pkg/demoinfocs"
 	events "github.com/markus-wa/demoinfocs-golang/v4/pkg/demoinfocs/events"
+	common "github.com/markus-wa/demoinfocs-golang/v4/pkg/demoinfocs/common"
 )
 
 func main() {
@@ -19,17 +20,12 @@ func main() {
 	p := dem.NewParser(f)
 	defer p.Close()
 
-	// Register handler on kill events
 	p.RegisterEventHandler(func(e events.Kill) {
-		var hs string
-		if e.IsHeadshot {
-			hs = " (HS)"
+		var weapon = e.Victim.ActiveWeapon()
+		if weapon != nil && weapon.Type == common.EqKnife {
+			var knifeType = (KnifeType)(weapon.Entity.Property("m_iItemDefinitionIndex").Value().S2UInt64())
+			fmt.Printf("%s died holding %s\n", e.Victim, ToString(knifeType))
 		}
-		var wallBang string
-		if e.PenetratedObjects > 0 {
-			wallBang = " (WB)"
-		}
-		fmt.Printf("%s <%v%s%s> %s\n", e.Killer, e.Weapon, hs, wallBang, e.Victim)
 	})
 
 	// Parse to end
