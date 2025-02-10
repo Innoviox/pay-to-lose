@@ -37,7 +37,8 @@ func main() {
 		}
 	}
 
+	fmt.Printf("%20s | %s | %s | %s \n", "        Knife        ", "Games", "Deaths", "Ratio")
 	for _, kt := range AllKnifeTypes {
-		fmt.Printf("%-20s | %-2d | %-2d \n", ToString(kt), ad.Owners[kt], ad.Deaths[kt])
+		fmt.Printf("%-20s | %5d | %5d | %.3f \n", ToString(kt), ad.Games[kt], ad.Deaths[kt], float64(ad.Deaths[kt])/float64(ad.Games[kt]))
 	}
 }

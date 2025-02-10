@@ -13,12 +13,14 @@ import (
 type AggregatedData struct {
 	Deaths map[KnifeType]int
 	Owners map[KnifeType]int
+	Games map[KnifeType]int
 }
 
 func NewAggregatedData() *AggregatedData {
 	d := &AggregatedData{
 		Deaths: make(map[KnifeType]int),
 		Owners: make(map[KnifeType]int),
+		Games: make(map[KnifeType]int),
 	}
 
 	return d
@@ -32,17 +34,25 @@ func (ad *AggregatedData) Add (d *Data) {
 	for k, v := range d.Deaths {
 		ad.Deaths[d.Owners[k]] += v
 	}
+
+	for _, v := range d.Games {
+		for _, k := range v {
+			ad.Games[k]++
+		}
+	}
 }
 
 type Data struct {
 	Deaths map[string]int
 	Owners map[string]KnifeType
+	Games map[string]map[string]KnifeType
 }
 
 func NewData() *Data {
 	d := &Data{
 		Deaths: make(map[string]int),
 		Owners: make(map[string]KnifeType),
+		Games: make(map[string]map[string]KnifeType),
 	}
 
 	return d
@@ -68,12 +78,17 @@ func Read(fp string, c chan *Data) {
 
 	p.RegisterEventHandler(func(e events.Kill) {
 		var weapon = e.Victim.ActiveWeapon()
+
+		if _, ok := d.Games[fp]; !ok {
+			d.Games[fp] = make(map[string]KnifeType)
+		}
 		
 		var vfp = e.Victim.String() + "@@@" + fp
 		if _, ok := d.Owners[vfp]; !ok {
 			var vkt = GetKnife(e.Victim)
 			if vkt != 0 {
 				d.Owners[vfp] = (KnifeType)(vkt)
+				d.Games[fp][vfp] = (KnifeType)(vkt)
 			}
 		}
 
@@ -82,6 +97,7 @@ func Read(fp string, c chan *Data) {
 			var kkt = GetKnife(e.Killer)
 			if kkt != 0 {
 				d.Owners[kfp] = (KnifeType)(kkt)
+				d.Games[fp][kfp] = (KnifeType)(kkt)
 			}
 		}
 		
